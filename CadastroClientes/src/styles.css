@@ -22,12 +22,15 @@
         width: 100% !important;
         height: 100px !important;
         border-radius: 10px 10px 0px 0px !important; /* Ajusta a borda */
+        box-shadow: none !important;
+
     }
     
     .form {  
         margin-left: 0 !important;
         border-radius: 0px 0px 10px 10px !important;
         padding: 30px !important;
+        box-shadow: none !important;
     };
 
 
@@ -48,17 +51,6 @@ body.cadastro {
     justify-content: center;
 }
 
-.form {
-    background-color: #fff;
-    border-radius: 0px 10px 10px 0px;
-    padding: 50px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    width: 300px;
-    text-align: center;
-    position: relative;
-    margin-left: 150px;
-}
-
 .welcome-container {
     position: absolute;
     left: -150px; /* Move para a esquerda do campo de formulário */
@@ -69,10 +61,23 @@ body.cadastro {
     padding: 0px;
     text-align: center;
     border-radius: 10px 0px 0px 10px;
-    box-shadow: -15px 0px 10px -15px rgba(0, 0, 0, 0.5);
+    box-shadow: -12px 12px 10px var(--cor-azul-claro);
     width: 150px; 
     opacity: 1; 
 }
+
+.form {
+    background-color: #fff;
+    border-radius: 0px 10px 10px 0px;
+    padding: 50px;
+    box-shadow: -20px 12px 10px var(--cor-azul-claro);
+    width: 300px;
+    text-align: center;
+    position: relative;
+    margin-left: 150px;
+}
+
+
 
 .welcome-container {
     display: flex;
@@ -132,8 +137,8 @@ body.cadastro {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
+    margin: 5% auto;
+    padding: 50px;
     border: 1px solid #888;
     width: 80%;
     max-width: 400px;
@@ -235,6 +240,10 @@ input:enabled {
     margin-top: 0;
 }
 
+#clienteError {
+    margin-top: 0;
+}
+
 button {
     width: 100%;
     padding: 12px;
@@ -251,7 +260,7 @@ button:hover {
     background-image: var(--cor-degrade-botao-hover);
 }
 
-#cadastrarNovoClienteButton {
+#cadastrarButton {
     width: 400px;
     
 }
@@ -262,6 +271,7 @@ a {
 
 body > div> p {
     font-size: 0.98em;
+    margin-top: 10px;
 }
 
 a:hover {
