@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="../assets/logoAgrosys.png" type="image/x-icon">
 </head>
 <body>
-    <h2 id="tableTitle">Clientes</h2>
+    <h2 id="tableTitle">Clientes <button id="cadastrarNovoClienteButton">Cadastrar Novo Cliente</button></h2>
     <!-- Tabela de Clientes -->
     <table id="clientesTable" border="1">
         <!-- Estrutura da tabela de clientes -->
@@ -24,10 +24,30 @@
     </table>
 
     <!-- Formulário de Cadastro de Cliente (inicialmente oculto) -->
-    <form id="cadastroClienteForm" style="display: none;">
-        <!-- Estrutura do formulário de cadastro de cliente -->
-        <!-- Campos, botões, etc. -->
-    </form>
+    <div id="modalCliente" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fecharModalCliente">&times;</span>
+            <form id="cadastroClienteForm">
+                <label for="nomeCompleto">Nome Completo:</label>
+                <input type="text" id="nomeCompleto" required>
+        
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" required>
+        
+                <label for="dataNascimento">Data de Nascimento:</label>
+                <input type="date" id="dataNascimento" required>
+        
+                <label for="telefone">Telefone:</label>
+                <input type="tel" id="telefone">
+        
+                <label for="celular">Celular:</label>
+                <input type="tel" id="celular">
+        
+                <button type="button" id="salvarClienteButton">Salvar Cliente</button>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Tabela de Endereços (inicialmente oculta) -->
     <table id="enderecosTable" border="1" style="display: none;">

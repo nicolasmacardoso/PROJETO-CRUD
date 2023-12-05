@@ -6,7 +6,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tableTitle = document.getElementById('tableTitle');
     const mudarTabela = document.getElementById('mudarTabela');
     const cadastrarButton = document.getElementById('cadastrarButton');
+    const cadastrarNovoClienteButton = document.getElementById('cadastrarNovoClienteButton');
+    const modalCliente = document.getElementById('modalCliente');
+    const fecharModalCliente = document.getElementById('fecharModalCliente');
 
+    // Adicione essa função para esconder o modal
+    function fecharModal() {
+        modalCliente.style.display = 'none';
+    }
+
+    // Adicione essa função para limpar os campos do formulário no modal
+    function limparCamposModal() {
+        // Adicione aqui a lógica para limpar os campos do formulário no modal
+    }
+
+    // Adicione essa função para abrir o modal
+    function abrirModal() {
+        modalCliente.style.display = 'block';
+        // Adicione aqui a lógica necessária ao abrir o modal
+    }
+
+    // Adicione o evento de clique no botão "Cadastrar Novo Cliente"
+    if (cadastrarNovoClienteButton) {
+        cadastrarNovoClienteButton.addEventListener('click', () => {
+            abrirModal();
+        });
+    }
+
+    // Adicione o evento de clique no botão para fechar o modal
+    if (fecharModalCliente) {
+        fecharModalCliente.addEventListener('click', () => {
+            fecharModal();
+        });
+    }
+
+    // Adicione o evento para fechar o modal ao clicar fora dele
+    window.addEventListener('click', (event) => {
+        if (event.target === modalCliente) {
+            fecharModal();
+            limparCamposModal(); // Limpar campos ao fechar o modal
+        }
+    });
+    
     function redirectToEnderecos() {
         console.log('Redirecionando para Endereços...');
         // Lógica para abrir o formulário de cadastro de cliente
@@ -42,10 +83,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     
         // Outras operações necessárias ao redirecionar para a visualização de endereços
     }
-    
-    // Adicionar ouvinte de evento inicial
-    mudarTabela.addEventListener('click', redirectToEnderecos);
+    const salvarClienteButton = document.getElementById('salvarClienteButton');
 
+    if (salvarClienteButton) {
+        salvarClienteButton.addEventListener('click', () => {
+            // Obter valores do formulário
+            const nomeCompleto = document.getElementById('nomeCompleto').value;
+            const cpf = document.getElementById('cpf').value;
+            const dataNascimento = document.getElementById('dataNascimento').value;
+            const telefone = document.getElementById('telefone').value;
+            const celular = document.getElementById('celular').value;
+    
+            adicionarClienteATabela(nomeCompleto, cpf, dataNascimento, telefone, celular);
+    
+            resetFormFields([nomeCompleto, cpfInput, dataNascimento, telefone, celular]);
+        });
+    }
+    
+    function adicionarClienteATabela(nomeCompleto, cpf, dataNascimento, telefone, celular) {
+        const tableBody = document.getElementById('clientesTableBody');
+        const newRow = tableBody.insertRow();
+        newRow.insertCell(0).textContent = nomeCompleto;
+        newRow.insertCell(1).textContent = cpf;
+        newRow.insertCell(2).textContent = dataNascimento;
+        newRow.insertCell(3).textContent = telefone;
+        newRow.insertCell(4).textContent = celular;
+    }
+
+    if (mudarTabela) {
+        mudarTabela.addEventListener('click', redirectToEnderecos);
+    }
+    
     if (cadastroLink) {
         cadastroLink.addEventListener('click', (event) => {
             event.preventDefault();
