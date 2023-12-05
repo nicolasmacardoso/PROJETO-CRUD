@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@500&display=swap');
+
+* {
+    --cor-padrão-azul: #008cff;
+    --cor-azul-claro: #3f93d8;
+    --cor-azul-escuro: rgb(14, 69, 114);
+    --cor-fundo: linear-gradient(rgba(35, 136, 218, 0.692), rgba(9, 38, 61, 0.904));
+}
+
+@media only screen and (max-width: 490px) {
+    .welcome-container {
+        top: -100px  !important; /* Ajusta a posição acima do campo de input */
+        left: 0px !important;
+        width: 100% !important;
+        height: 100px !important;
+        border-radius: 10px 10px 0px 0px !important; /* Ajusta a borda */
+    }
+    
+    .form {  
+        margin-left: 0 !important;
+        border-radius: 0px 0px 10px 10px !important;
+    };
+
+
+}
+
+body {
+    font-family: 'Comfortaa', sans-serif;    
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: var(--cor-fundo),
+                url('../assets/Fundo2.png') center/cover fixed;
+}
+
+.form {
+    background-color: #fff;
+    border-radius: 0px 10px 10px 0px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 300px;
+    text-align: center;
+    position: relative;
+    margin-left: 150px;
+}
+
+.welcome-container {
+    position: absolute;
+    left: -150px; /* Move para a esquerda do campo de formulário */
+    top: 0;
+    height: 100%;
+    background-color: var(--cor-padrão-azul);
+    color: white;
+    padding: 0px;
+    text-align: center;
+    border-radius: 10px 0px 0px 10px;
+    box-shadow: -15px 0px 10px -15px rgba(0, 0, 0, 0.5);
+    width: 150px; 
+    opacity: 1; 
+}
+
+.welcome-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 1.5em;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+h2 {
+    color: var(--cor-azul-escuro);
+    font-size: 2em;
+    text-transform: uppercase;
+}
+
+.form-login {
+    position: relative;
+}
+
+.form-cadastro {
+    position: relative;
+}
+
+.label-container {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--cor-padrão-azul);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    width: 100px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    transition: width 0.5s;
+}
+
+label {
+    display: block;
+    margin: 10px 0;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 50px;
+    box-sizing: border-box;
+    border-width: 0 0 1px 0;
+    border-color: var(--cor-padrão-azul);
+}
+
+input::placeholder {
+    color: var(--cor-azul-claro);
+    font-weight: 500;
+}
+
+input:enabled {
+    outline: none;
+}
+
+.error-message { 
+    color: red;
+    margin-top: -36px;
+}
+
+#userExistsError {
+    margin-top: 0;
+}
+
+#userInvalidError {
+    margin-top: 0;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--cor-padrão-azul);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Comfortaa', sans-serif;
+}
+
+button:hover {
+    background-color: var(--cor-azul-escuro);
+}
+
+a {
+    text-decoration: none;
+    color: var(--cor-padrão-azul);
+}
+
+body > div> p {
+    font-size: 0.98em;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#btnAddClient {
+    background-color: var(--cor-padrão-azul);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#btnAddClient:hover {
+    background-color: var(--cor-azul-escuro);
+}

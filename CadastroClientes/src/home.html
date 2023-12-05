@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Seu arquivo de estilos -->
+    <link rel="shortcut icon" href="../assets/logoAgrosys.png" type="image/x-icon">
+</head>
+<body>
+    <h1>Bem-vindo à Página Inicial</h1>
+
+    <h2>Clientes</h2>
+    <!-- Tabela de Clientes -->
+    <table id="clientesTable" border="1">
+        <!-- Estrutura da tabela de clientes -->
+        <thead>
+            <tr>
+                <th>Nome Completo</th>
+                <th>CPF</th>
+                <th>Data de Nascimento</th>
+                <th>Telefone</th>
+                <th>Celular</th>
+            </tr>
+        </thead>
+        <tbody id="clientesTableBody"></tbody>
+    </table>
+
+    <h2>Endereços</h2>
+    
+    <table id="enderecosTable" border="1" style="display: none;">
+        <!-- Estrutura da tabela de endereços -->
+        <thead>
+            <tr>
+                <th>CEP</th>
+                <th>Rua</th>
+                <th>Bairro</th>
+                <th>Cidade</th>
+                <th>Estado</th>
+                <th>País</th>
+            </tr>
+        </thead>
+        <tbody id="enderecosTableBody"></tbody>
+    </table>
+
+    <button data-action="cadastrarCliente">Cadastrar Cliente</button>
+    <button data-action="verEnderecos">Ver Endereços</button>
+
+    <script src="main.js"></script>
+</body>
+</html>

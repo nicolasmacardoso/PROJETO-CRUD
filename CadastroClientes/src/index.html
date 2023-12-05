@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="../assets/logoAgroSys.png" type="image/x-icon">
+    <title>Agrosys Cadastro de Clientes</title>
+</head>
+<body>
+    <div id="loginForm" class="form">
+        <div class="welcome-container show-text">
+            <p class="welcome-text">Bem-vindo de volta</p>
+        </div>
+        <h2>Login</h2>
+        <div id="userInvalidError" class="error-message"></div>
+        <input type="text" id="usuarioInput" placeholder="Usuário" required>
+        <div class="error-message" id="usuarioError"></div>
+        <br>
+        <input type="password" id="senhaInput" placeholder="Senha" required>
+        <div class="error-message" id="senhaError"></div>
+        <br>
+        <button id="loginButton">Entrar</button>
+        <br>
+        <p>Não possui uma conta? <a href="#" id="cadastroLink">Cadastre-se</a></p>
+    </div>
+
+    <div id="cadastroForm" style="display: none;" class="form">
+        <div class="welcome-container">
+            <p class="welcome-text">Bem-</p>
+        </div>
+        <h2>Cadastro</h2>
+        <div id="cadastroSuccessMessage" style="display: none; color: green;">
+            Cadastro bem-sucedido! Você pode entrar com sua conta.
+        </div>
+        <div id="userExistsError" class="error-message"></div>
+        <input type="text" id="novoUsuarioInput"  placeholder="Usuário" required>
+        <div class="error-message" id="novoUsuarioError"></div>
+        <br>
+        <input type="password" id="novaSenhaInput" placeholder="Senha" required>
+        <div class="error-message" id="novaSenhaError"></div>
+        <br>
+        <input type="password" id="confirmarSenhaInput" placeholder="Confirmar senha" required>
+        <div class="error-message" id="confirmarSenhaError"></div>
+        <br>
+        <button id="cadastroButton">Cadastrar</button>
+        <p>Já possui uma conta? <a href="#" id="entrarLink">Faça login</a></p>
+    </div>
+
+    <script src="../node_modules/sql.js/dist/sql-wasm.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
