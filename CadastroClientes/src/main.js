@@ -3,20 +3,68 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cadastroForm = document.getElementById('cadastroForm');
     const cadastroLink = document.getElementById('cadastroLink');
     const entrarLink = document.getElementById('entrarLink');
+    const tableTitle = document.getElementById('tableTitle');
+    const mudarTabela = document.getElementById('mudarTabela');
+    const cadastrarButton = document.getElementById('cadastrarButton');
 
-    cadastroLink.addEventListener('click', (event) => {
-        event.preventDefault();
-        loginForm.style.display = 'none';
-        cadastroForm.style.display = 'block';
-    });
+    function redirectToEnderecos() {
+        console.log('Redirecionando para Endereços...');
+        // Lógica para abrir o formulário de cadastro de cliente
+        tableTitle.textContent = 'ENDEREÇOS';
+        mudarTabela.textContent = 'Clientes';
+        cadastrarButton.textContent = 'Cadastrar novo endereço';
+    
+        enderecosTable.style.display = 'table';
+        clientesTable.style.display = 'none';
+    
+        // Remover ouvinte de evento desnecessário
+        mudarTabela.removeEventListener('click', redirectToEnderecos);
+        // Adicionar ouvinte de evento após a atualização
+        mudarTabela.addEventListener('click', redirectToClientes);
+    
+        // Outras operações necessárias ao mudar para o formulário de cadastro de cliente
+    }
+    
+    function redirectToClientes() {
+        console.log('Redirecionando para Clientes...');
+        // Lógica para redirecionar para a visualização de endereços
+        tableTitle.textContent = 'CLIENTES';
+        mudarTabela.textContent = 'Endereços dos clientes';
+        cadastrarButton.textContent = 'Cadastrar novo cliente ';
+    
+        clientesTable.style.display = 'table';
+        enderecosTable.style.display = 'none';
+    
+        // Remover ouvinte de evento desnecessário
+        mudarTabela.removeEventListener('click', redirectToClientes);
+        // Adicionar ouvinte de evento após a atualização
+        mudarTabela.addEventListener('click', redirectToEnderecos);
+    
+        // Outras operações necessárias ao redirecionar para a visualização de endereços
+    }
+    
+    // Adicionar ouvinte de evento inicial
+    mudarTabela.addEventListener('click', redirectToEnderecos);
 
-    entrarLink.addEventListener('click', (event) => {
-        event.preventDefault();
-        // Oculta o formulário de cadastro e exibe o formulário de login
-        loginForm.style.display = 'block';
-        cadastroForm.style.display = 'none';
-    });
+    if (cadastroLink) {
+        cadastroLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (loginForm && cadastroForm) {
+                loginForm.style.display = 'none';
+                cadastroForm.style.display = 'block';
+            }
+        });
+    }
 
+    if (entrarLink) {
+        entrarLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (loginForm && cadastroForm) {
+                loginForm.style.display = 'block';
+                cadastroForm.style.display = 'none';
+            }
+        });
+    }
 
     const SQL = await initSqlJs({
         locateFile: filename => `../node_modules/sql.js/dist/${filename}`
@@ -53,96 +101,95 @@ document.addEventListener('DOMContentLoaded', async () => {
     hideErrorMessage('userExistsError');
     hideErrorMessage('userInvalidError');
 
-    loginButton.addEventListener('click', () => {
-        const usuario = document.getElementById('usuarioInput').value;
-        const senha = document.getElementById('senhaInput').value;
+    if (loginButton) {
+        loginButton.addEventListener('click', () => {
+            const usuario = document.getElementById('usuarioInput').value;
+            const senha = document.getElementById('senhaInput').value;
 
-        if (usuario.trim() === "") {
-            displayErrorMessage('usuarioError', 'Usuário não pode ser vazio.');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-            return;
-        } else {
-            hideErrorMessage('usuarioError');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-        }
+            if (usuario.trim() === "") {
+                displayErrorMessage('usuarioError', 'Usuário não pode ser vazio.');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+                return;
+            } else {
+                hideErrorMessage('usuarioError');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+            }
 
-        if (senha.trim() === "") {
-            displayErrorMessage('senhaError', 'Senha não pode ser vazia.');
-            return;
-        } else {
-            hideErrorMessage('senhaError');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-        }
+            if (senha.trim() === "") {
+                displayErrorMessage('senhaError', 'Senha não pode ser vazia.');
+                return;
+            } else {
+                hideErrorMessage('senhaError');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+            }
 
-        const authenticated = authenticateUser(db, usuario, senha);
+            const authenticated = authenticateUser(db, usuario, senha);
 
-        if (authenticated) {
-            showUsersList(db);
-            window.location.href = 'home.html';
-        }
-        else {
-            displayErrorMessage('userInvalidError', 'Usuário ou senha inválido.');
-        }
-    });
-
-    cadastroButton.addEventListener('click', () => {
-        const novoUsuarioInput = document.getElementById('novoUsuarioInput');
-        const novaSenhaInput = document.getElementById('novaSenhaInput');
-        const confirmarSenhaInput = document.getElementById('confirmarSenhaInput');
-    
-        const novoUsuario = novoUsuarioInput.value;
-        const novaSenha = novaSenhaInput.value;
-        const confirmarSenha = confirmarSenhaInput.value;
-    
-        if (novoUsuario.trim() === "") {
-            displayErrorMessage('novoUsuarioError', 'Novo usuário não pode ser vazio.');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-            return;
-        } else {
-            hideErrorMessage('novoUsuarioError');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-        }
-    
-        if (novaSenha.length < 6) {
-            displayErrorMessage('novaSenhaError', 'Senha deve ter pelo menos 6 caracteres.');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-            return;
-        } else {
-            hideErrorMessage('novaSenhaError');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-        }
-    
-        if (novaSenha != confirmarSenha) {
-            displayErrorMessage('confirmarSenhaError', 'Senhas não coincidem.');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-            return;
-        } else {
-            hideErrorMessage('confirmarSenhaError');
-            hideErrorMessage('userExistsError');
-            hideErrorMessage('userInvalidError');
-        }
-    
-        const userCreated = createUser(db, novoUsuario, novaSenha);
-    
-        if (userCreated) {
-            showUsersList(db);
-            saveDatabase(); 
-            console.log('Usuário cadastrado com sucesso!');
-            resetFormFields([novoUsuarioInput, novaSenhaInput, confirmarSenhaInput]);
-            displaySuccessMessage('cadastroSuccessMessage');
-        } else {
-            displayErrorMessage('userExistsError', 'Esse nome de usuário já está sendo utilizado.');
-            console.log('Erro ao cadastrar usuário. Tente novamente.');
-        }
-    });
+            if (authenticated) {
+                showUsersList(db);
+                window.location.href = 'home.html';
+            }
+            else {
+                displayErrorMessage('userInvalidError', 'Usuário ou senha inválido.');
+            }
+        });
+    }
+    if (cadastroButton) {
+        cadastroButton.addEventListener('click', () => {
+            const novoUsuarioInput = document.getElementById('novoUsuarioInput');
+            const novaSenhaInput = document.getElementById('novaSenhaInput');
+            const confirmarSenhaInput = document.getElementById('confirmarSenhaInput');
+        
+            const novoUsuario = novoUsuarioInput.value;
+            const novaSenha = novaSenhaInput.value;
+            const confirmarSenha = confirmarSenhaInput.value;
+        
+            if (novoUsuario.trim() === "") {
+                displayErrorMessage('novoUsuarioError', 'Usuário não pode ser vazio.');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+                return;
+            } 
+        
+            if (novaSenha.length < 6) {
+                displayErrorMessage('novaSenhaError', 'Senha deve ter pelo menos 6 caracteres.');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+                return;
+            } else {
+                hideErrorMessage('novaSenhaError');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+            }
+        
+            if (novaSenha != confirmarSenha) {
+                displayErrorMessage('confirmarSenhaError', 'Senhas não coincidem.');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+                return;
+            } else {
+                hideErrorMessage('confirmarSenhaError');
+                hideErrorMessage('userExistsError');
+                hideErrorMessage('userInvalidError');
+            }
+        
+            const userCreated = createUser(db, novoUsuario, novaSenha);
+        
+            if (userCreated) {
+                showUsersList(db);
+                saveDatabase(); 
+                console.log('Usuário cadastrado com sucesso!');
+                resetFormFields([novoUsuarioInput, novaSenhaInput, confirmarSenhaInput]);
+                displaySuccessMessage('cadastroSuccessMessage');
+            } else {
+                displayErrorMessage('userExistsError', 'Esse nome de usuário já está sendo utilizado.');
+                console.log('Erro ao cadastrar usuário. Tente novamente.');
+            }
+        });
+    }
 });
 
 function resetFormFields(fields) {
@@ -167,8 +214,12 @@ function displayErrorMessage(id, message) {
 
 function hideErrorMessage(id) {
     const errorElement = document.getElementById(id);
-    errorElement.textContent = "";
-    errorElement.style.display = 'none';
+
+    // Adicione esta verificação
+    if (errorElement !== null) {
+        errorElement.textContent = "";
+        errorElement.style.display = 'none';
+    }
 }
 
 function initializeDatabase(db) {

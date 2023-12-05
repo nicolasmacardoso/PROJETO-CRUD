@@ -28,13 +28,54 @@ body {
     font-family: 'Comfortaa', sans-serif;    
     margin: 0;
     padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     height: 100vh;
     background: var(--cor-fundo),
                 url('../assets/Fundo2.png') center/cover fixed;
 }
+
+body.cadastro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Adicione estas regras CSS ao seu arquivo styles.css */
+
+#clientesTable,
+#enderecosTable {
+    background-color: #fff;
+    width: 80%; /* Padrão de largura */
+    margin: 20px auto;
+    max-height: 60vh; /* Altura máxima para permitir rolagem se necessário */
+    overflow-y: auto; /* Adiciona barra de rolagem vertical se a tabela crescer além da altura máxima */
+}
+
+#clientesTable h2,
+#enderecosTable h2 {
+    color: var(--cor-azul-escuro);
+    font-size: 2em;
+    text-transform: uppercase;
+}
+
+#clientesTable button[data-action="verEnderecos"],
+#enderecosTable button[data-action="verClientes"] {
+    background-color: var(--cor-padrão-azul);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#clientesTable button[data-action="verEnderecos"]:hover,
+#enderecosTable button[data-action="verClientes"]:hover {
+    background-color: var(--cor-azul-escuro);
+}
+
 
 .form {
     background-color: #fff;
@@ -75,9 +116,7 @@ h1 {
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+    background-color: #fff;
 }
 
 table, th, td {

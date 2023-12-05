@@ -7,9 +7,7 @@
     <link rel="shortcut icon" href="../assets/logoAgrosys.png" type="image/x-icon">
 </head>
 <body>
-    <h1>Bem-vindo à Página Inicial</h1>
-
-    <h2>Clientes</h2>
+    <h2 id="tableTitle">Clientes</h2>
     <!-- Tabela de Clientes -->
     <table id="clientesTable" border="1">
         <!-- Estrutura da tabela de clientes -->
@@ -25,8 +23,13 @@
         <tbody id="clientesTableBody"></tbody>
     </table>
 
-    <h2>Endereços</h2>
-    
+    <!-- Formulário de Cadastro de Cliente (inicialmente oculto) -->
+    <form id="cadastroClienteForm" style="display: none;">
+        <!-- Estrutura do formulário de cadastro de cliente -->
+        <!-- Campos, botões, etc. -->
+    </form>
+
+    <!-- Tabela de Endereços (inicialmente oculta) -->
     <table id="enderecosTable" border="1" style="display: none;">
         <!-- Estrutura da tabela de endereços -->
         <thead>
@@ -42,9 +45,11 @@
         <tbody id="enderecosTableBody"></tbody>
     </table>
 
-    <button data-action="cadastrarCliente">Cadastrar Cliente</button>
-    <button data-action="verEnderecos">Ver Endereços</button>
+    <!-- Botões -->
+    <button id="mudarTabela" data-action="verEnderecos">Endereços dos clientes</button>
+    <button id="cadastrarButton" data-action="cadastrarCliente">Cadastrar novo cliente</button>
 
+    <script src="../node_modules/sql.js/dist/sql-wasm.js"></script>
     <script src="main.js"></script>
 </body>
 </html>
