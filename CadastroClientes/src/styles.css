@@ -138,6 +138,10 @@ body.cadastro {
     border-radius: 4px;
 }
 
+#title-endereco { 
+    font-size: 1.8em;
+}
+
 .modal-content {
     background-color: #fefefe;
     margin: 5% auto;
@@ -246,9 +250,15 @@ input:enabled {
 #clienteError {
     margin-top: 0;
 }
+
 #atualizarClienteError {
     margin-top: 0;
 }
+
+#enderecoError {
+    margin-top: 0;
+}
+
 button {
     width: 100%;
     padding: 12px;

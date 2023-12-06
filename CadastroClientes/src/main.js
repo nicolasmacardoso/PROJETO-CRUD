@@ -6,11 +6,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tableTitle = document.getElementById('tableTitle');
     const mudarTabela = document.getElementById('mudarTabela');
     const cadastrarButton = document.getElementById('cadastrarButton');
+
+    const modalEndereco = document.getElementById('modalEndereco');
+    const fecharModalEndereco = document.getElementById('fecharModalEndereco');
+    const selectUsuario = document.getElementById('usuario');
+
     const modalCliente = document.getElementById('modalCliente');
     const modalAtualizarCliente = document.getElementById('modalAtualizarCliente');
-
     const fecharModalCliente = document.getElementById('fecharModalCliente');
     const fecharModalAtualizar = document.getElementById('fecharModalAtualizar');
+
     const atualizarClienteButton = document.getElementById('atualizarClienteButton');
 
     function limparCamposModal() {
@@ -24,16 +29,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     function abrirModal() {
         modalCliente.style.display = 'block';
     }
+    
+    function abrirModalEndereco() {
+        modalEndereco.style.display = 'block';
+    }
+
     function abrirModalAtualizar() {
         modalAtualizarCliente.style.display = 'block';
     }
 
     if (cadastrarButton) {
         cadastrarButton.addEventListener('click', () => {
+        if (cadastrarButton.textContent === 'Cadastrar novo cliente') {
             abrirModal();
             hideErrorMessage('clienteError');
             hideErrorMessage('atualizarClienteError');
-        });
+        } else {
+            abrirModalEndereco();
+            hideErrorMessage('enderecoError');
+            hideErrorMessage('atualizarEnderecoError');
+        }});
     }
 
     if (fecharModalCliente) {
@@ -48,9 +63,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    if (fecharModalEndereco) {
+        fecharModalEndereco.addEventListener('click', () => {
+            fecharModalEnderecos();
+        });
+    }
+
     window.addEventListener('click', (event) => {
-        if (event.target === modalCliente) {
+        if (event.target === modalCliente || event.target === modalEndereco || event.target === modalAtualizarCliente) {
             fecharModal();
+            fecharModalEditar();
+            fecharModalEnderecos();
             limparCamposModal();
         }
     });
@@ -60,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tableTitle.textContent = 'ENDEREÇOS';
         mudarTabela.textContent = 'Clientes';
         cadastrarButton.textContent = 'Cadastrar novo endereço';
+        
     
         enderecosTable.style.display = 'table';
         clientesTable.style.display = 'none';
@@ -83,6 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const salvarClienteButton = document.getElementById('salvarClienteButton');
+    const salvarEnderecoButton = document.getElementById('salvarEnderecoButton');
     
     function confirmarExclusaoCliente(idCliente) {
         Swal.fire({
@@ -175,58 +200,60 @@ document.addEventListener('DOMContentLoaded', async () => {
         tbody.rows[ultimaLinha].appendChild(tdAcoes);
     }
 
-    atualizarClienteButton.addEventListener('click', () => {
-        const idCliente = idClienteSelecionado;
-        const nomeAtualizado = document.getElementById('nomeAtualizado').value.trim();
-        const cpfAtualizado = document.getElementById('cpfAtualizado').value.trim();
-        const dataNascimentoAtualizada = document.getElementById('dataNascimentoAtualizada').value.trim();
-        const telefoneAtualizado = document.getElementById('telefoneAtualizado').value.trim();
-        const celularAtualizado = document.getElementById('celularAtualizado').value.trim();
-    
-        if (!nomeAtualizado || !cpfAtualizado || !dataNascimentoAtualizada || !celularAtualizado) {
-            displayErrorMessage('atualizarClienteError', 'Por favor, preencha todos os campos corretamente.');
-            return;
-        }
-    
-        if (!/^[a-zA-Z\s]+$/.test(nomeAtualizado)) {
-            displayErrorMessage('atualizarClienteError', 'Nome completo deve conter apenas letras.');
-            return;
-        }
-
-        const today = new Date();
-        const inputDate = new Date(dataNascimentoAtualizada);
-        if (isNaN(inputDate.getTime()) || inputDate >= today) {
-            displayErrorMessage('atualizarClienteError', 'Data de nascimento inválida.');
-            return;
-        }
-    
-        const updateQuery = `
-            UPDATE Clientes
-            SET nome = ?, cpf = ?, dataNascimento = ?, telefone = ?, celular = ?
-            WHERE id = ?;
-        `;
-    
-        const stmt = db.prepare(updateQuery);
-    
-        try {
-            stmt.bind([nomeAtualizado, cpfAtualizado, dataNascimentoAtualizada, telefoneAtualizado, celularAtualizado, idCliente]);
-            stmt.step();
-    
-            const rowsModified = db.getRowsModified();
-    
-            if (rowsModified > 0) {
-                console.log(`Cliente com ID ${idCliente} atualizado com sucesso.`);
-                carregarClientesNaTabelaHTML();
-                saveDatabase();
-            } else {
-                console.log(`Cliente com ID ${idCliente} não encontrado.`);
+    if (atualizarClienteButton) {
+        atualizarClienteButton.addEventListener('click', () => {
+            const idCliente = idClienteSelecionado;
+            const nomeAtualizado = document.getElementById('nomeAtualizado').value.trim();
+            const cpfAtualizado = document.getElementById('cpfAtualizado').value.trim();
+            const dataNascimentoAtualizada = document.getElementById('dataNascimentoAtualizada').value.trim();
+            const telefoneAtualizado = document.getElementById('telefoneAtualizado').value.trim();
+            const celularAtualizado = document.getElementById('celularAtualizado').value.trim();
+        
+            if (!nomeAtualizado || !cpfAtualizado || !dataNascimentoAtualizada || !celularAtualizado) {
+                displayErrorMessage('atualizarClienteError', 'Por favor, preencha todos os campos corretamente.');
+                return;
             }
-        } catch (error) {
-            console.error(`Erro ao atualizar cliente com ID ${idCliente}:`, error);
-        }
-    
-        fecharModalEditar();
-    });
+        
+            if (!/^[a-zA-Z\s]+$/.test(nomeAtualizado)) {
+                displayErrorMessage('atualizarClienteError', 'Nome completo deve conter apenas letras.');
+                return;
+            }
+
+            const today = new Date();
+            const inputDate = new Date(dataNascimentoAtualizada);
+            if (isNaN(inputDate.getTime()) || inputDate >= today) {
+                displayErrorMessage('atualizarClienteError', 'Data de nascimento inválida.');
+                return;
+            }
+        
+            const updateQuery = `
+                UPDATE Clientes
+                SET nome = ?, cpf = ?, dataNascimento = ?, telefone = ?, celular = ?
+                WHERE id = ?;
+            `;
+        
+            const stmt = db.prepare(updateQuery);
+        
+            try {
+                stmt.bind([nomeAtualizado, cpfAtualizado, dataNascimentoAtualizada, telefoneAtualizado, celularAtualizado, idCliente]);
+                stmt.step();
+        
+                const rowsModified = db.getRowsModified();
+        
+                if (rowsModified > 0) {
+                    console.log(`Cliente com ID ${idCliente} atualizado com sucesso.`);
+                    carregarClientesNaTabelaHTML();
+                    saveDatabase();
+                } else {
+                    console.log(`Cliente com ID ${idCliente} não encontrado.`);
+                }
+            } catch (error) {
+                console.error(`Erro ao atualizar cliente com ID ${idCliente}:`, error);
+            }
+        
+            fecharModalEditar();
+        });
+    }
     const cpfAtualizadoInput = document.getElementById('cpfAtualizado');
     const telefoneAtualizadoInput = document.getElementById('telefoneAtualizado');
     const celularAtualizadoInput = document.getElementById('celularAtualizado');
@@ -331,6 +358,48 @@ document.addEventListener('DOMContentLoaded', async () => {
             hideErrorMessage('atualizarClienteError');
         });
     }
+
+    if (salvarEnderecoButton) {
+        salvarEnderecoButton.addEventListener('click', () => {
+            const cep = document.getElementById('cep').value;
+            const rua = document.getElementById('rua').value;
+            const bairro = document.getElementById('bairro').value;
+            const cidade = document.getElementById('cidade').value;
+            const estado = document.getElementById('estado').value;
+            const pais = document.getElementById('pais').value;
+            const usuario = document.getElementById('usuario').value;
+
+            if (!cep || !rua || !bairro || !cidade || !estado || !pais || !usuario) {
+                displayErrorMessage('enderecoError', 'Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(rua)) {
+                displayErrorMessage('enderecoError', 'Nome completo deve conter apenas letras.');
+                return;
+            }
+
+            const today = new Date();
+            const inputDate = new Date(dataNascimento);
+            if (isNaN(inputDate.getTime()) || inputDate >= today) {
+                displayErrorMessage('enderecoError', 'Data de nascimento inválida.');
+                return;
+            }
+
+            adicionarEnderecoAoBanco(nomeCompleto, cpf, dataNascimento, telefone, celular);
+            adicionarEnderecoATabelaHTML(nomeCompleto, cpf, dataNascimento, telefone, celular);
+
+            const idEndereco = obterIdEndereco(nomeCompleto, cpf, dataNascimento);
+            adicionarIconeAtualizarEndereco(idEndereco);
+            adicionarIconeExcluirEndereco(idEndereco);
+            
+            limparCamposModal();
+            fecharModal();
+            hideErrorMessage('enderecoError');
+            hideErrorMessage('atualizarEnderecoError');
+        });
+    }
+
     const cpfInput = document.getElementById('cpf');
     const telefoneInput = document.getElementById('telefone');
     const celularInput = document.getElementById('celular');
@@ -399,6 +468,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function fecharModalEditar() {
         modalAtualizarCliente.style.display = 'none';
+    }
+
+    function fecharModalEnderecos() {
+        modalEndereco.style.display = 'none';
     }
 
     if (tableBody) {

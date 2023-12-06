@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>Home</title>
     <link rel="stylesheet" href="styles.css"> <!-- Seu arquivo de estilos -->
-    <link rel="shortcut icon" href="../assets/logoAgrosys.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/CIMA.png" type="image/x-icon">
 </head>
 <body>
     <h2 id="tableTitle">Clientes</h2>
-    <button id="cadastrarButton">Cadastrar Novo Cliente</button>
+    <button id="cadastrarButton">Cadastrar novo cliente</button>
     
     <table id="clientesTable" border="1">
         <thead>
@@ -88,6 +88,38 @@
         </thead>
         <tbody id="enderecosTableBody"></tbody>
     </table>
+
+    <div id="modalEndereco" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fecharModalEndereco">&times;</span>
+            <h2 class="modal-title" id="title-endereco">Cadastrar Endereço</h2>
+            <form id="enderecoForm">
+                <div id="enderecoError" class="error-message"></div>
+                <label for="cep">CEP:</label>
+                <input type="text" id="cep" required>
+        
+                <label for="rua">Rua:</label>
+                <input type="text" id="rua" required>
+        
+                <label for="bairro">Bairro:</label>
+                <input type="date" id="bairro" required>
+        
+                <label for="cidade">Cidade:</label>
+                <input type="text" id="cidade">
+        
+                <label for="estado">Estado:</label>
+                <input type="text" id="estado">
+
+                <label for="pais">País:</label>
+                <input type="text" id="pais">
+
+                <label for="usuario">Usuário:</label>
+                <select id="usuario" required></select>
+        
+                <button type="button" id="salvarEnderecoButton">Cadastrar endereço</button>
+            </form>
+        </div>
+    </div>
 
     <button id="mudarTabela" data-action="verEnderecos">Endereços dos clientes</button>
     
