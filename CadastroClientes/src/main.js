@@ -7,9 +7,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mudarTabela = document.getElementById('mudarTabela');
     const cadastrarButton = document.getElementById('cadastrarButton');
     const modalCliente = document.getElementById('modalCliente');
-    const fecharModalCliente = document.getElementById('fecharModalCliente');
+    const modalAtualizarCliente = document.getElementById('modalAtualizarCliente');
 
-    // Adicione essa função para limpar os campos do formulário no modal
+    const fecharModalCliente = document.getElementById('fecharModalCliente');
+    const fecharModalAtualizar = document.getElementById('fecharModalAtualizar');
+    const atualizarClienteButton = document.getElementById('atualizarClienteButton');
+
     function limparCamposModal() {
         const camposFormulario = ['nomeCompleto', 'cpf', 'dataNascimento', 'telefone', 'celular'];
     
@@ -18,38 +21,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Adicione essa função para abrir o modal
     function abrirModal() {
         modalCliente.style.display = 'block';
-        // Adicione aqui a lógica necessária ao abrir o modal
+    }
+    function abrirModalAtualizar() {
+        modalAtualizarCliente.style.display = 'block';
     }
 
-    // Adicione o evento de clique no botão "Cadastrar Novo Cliente"
     if (cadastrarButton) {
         cadastrarButton.addEventListener('click', () => {
             abrirModal();
             hideErrorMessage('clienteError');
+            hideErrorMessage('atualizarClienteError');
         });
     }
 
-    // Adicione o evento de clique no botão para fechar o modal
     if (fecharModalCliente) {
         fecharModalCliente.addEventListener('click', () => {
             fecharModal();
         });
     }
 
-    // Adicione o evento para fechar o modal ao clicar fora dele
+    if (fecharModalAtualizar) {
+        fecharModalAtualizar.addEventListener('click', () => {
+            fecharModalEditar();
+        });
+    }
+
     window.addEventListener('click', (event) => {
         if (event.target === modalCliente) {
             fecharModal();
-            limparCamposModal(); // Limpar campos ao fechar o modal
+            limparCamposModal();
         }
     });
     
     function redirectToEnderecos() {
         console.log('Redirecionando para Endereços...');
-        // Lógica para abrir o formulário de cadastro de cliente
         tableTitle.textContent = 'ENDEREÇOS';
         mudarTabela.textContent = 'Clientes';
         cadastrarButton.textContent = 'Cadastrar novo endereço';
@@ -57,17 +64,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         enderecosTable.style.display = 'table';
         clientesTable.style.display = 'none';
     
-        // Remover ouvinte de evento desnecessário
         mudarTabela.removeEventListener('click', redirectToEnderecos);
-        // Adicionar ouvinte de evento após a atualização
-        mudarTabela.addEventListener('click', redirectToClientes);
-    
-        // Outras operações necessárias ao mudar para o formulário de cadastro de cliente
+        mudarTabela.addEventListener('click', redirectToClientes);   
     }
-    
+
     function redirectToClientes() {
         console.log('Redirecionando para Clientes...');
-        // Lógica para redirecionar para a visualização de endereços
+
         tableTitle.textContent = 'CLIENTES';
         mudarTabela.textContent = 'Endereços dos clientes';
         cadastrarButton.textContent = 'Cadastrar novo cliente ';
@@ -75,15 +78,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         clientesTable.style.display = 'table';
         enderecosTable.style.display = 'none';
     
-        // Remover ouvinte de evento desnecessário
         mudarTabela.removeEventListener('click', redirectToClientes);
-        // Adicionar ouvinte de evento após a atualização
         mudarTabela.addEventListener('click', redirectToEnderecos);
-    
-        // Outras operações necessárias ao redirecionar para a visualização de endereços
     }
 
     const salvarClienteButton = document.getElementById('salvarClienteButton');
+    
     function confirmarExclusaoCliente(idCliente) {
         Swal.fire({
             title: 'Confirmação',
@@ -91,12 +91,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#3f93d8',
+            cancelButtonColor: '#8fc3ec',
             confirmButtonText: 'Sim, excluir!',
-            cancelButtonText: 'Cancelar'
+            cancelButtonText: 'Cancelar',
+            backdrop: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                // Chame a função para excluir o cliente aqui
                 excluirCliente(idCliente);
             }
         });
@@ -120,9 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tbody.rows[ultimaLinha].appendChild(tdAcoes);
     }    
 
-    // Função para excluir um cliente (a implementação desta função depende da sua lógica)
     function excluirCliente(idCliente) {
-        // Adicione sua lógica para excluir o cliente do banco de dados aqui
         const deleteQuery = "DELETE FROM Clientes WHERE id = ?;";
         const stmt = db.prepare(deleteQuery);
     
@@ -130,14 +128,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             stmt.bind([idCliente]);
             stmt.step();
     
-            // Verifica se alguma linha foi modificada (cliente excluído)
             const rowsModified = db.getRowsModified();
     
             if (rowsModified > 0) {
                 console.log(`Cliente com ID ${idCliente} excluído com sucesso.`);
-                // Recarregue a tabela após a exclusão
+
                 carregarClientesNaTabelaHTML();
                 saveDatabase();
+
             } else {
                 console.log(`Cliente com ID ${idCliente} não encontrado.`);
             }
@@ -145,29 +143,154 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error(`Erro ao excluir cliente com ID ${idCliente}:`, error);
         }
     }
-    // Função para adicionar ícone de lápis na tabela para atualizar os dados de um cliente
+
+    let idClienteSelecionado;
+
     function adicionarIconeAtualizarCliente(idCliente) {
         const tabela = document.getElementById('clientesTable');
         const tbody = tabela.querySelector('tbody');
-    
+
         const botaoAtualizar = document.createElement('button');
         botaoAtualizar.className = 'btn btn-primary btn-sm ms-2';
         botaoAtualizar.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/></svg>';
+
         botaoAtualizar.addEventListener('click', () => {
-            abrirModalAtualizarCliente(idCliente);
-        });
-    
+            idClienteSelecionado = idCliente;
+
+            const clienteSelecionado = obterDadosCliente(idCliente);
+            
+            document.getElementById('nomeAtualizado').value = clienteSelecionado.nome;
+            document.getElementById('cpfAtualizado').value = clienteSelecionado.cpf;
+            document.getElementById('dataNascimentoAtualizada').value = clienteSelecionado.dataNascimento;
+            document.getElementById('telefoneAtualizado').value = clienteSelecionado.telefone;
+            document.getElementById('celularAtualizado').value = clienteSelecionado.celular;
+
+            abrirModalAtualizar();
+    });
+
         const tdAcoes = document.createElement('td');
         tdAcoes.appendChild(botaoAtualizar);
-    
+
         const ultimaLinha = tbody.rows.length - 1;
         tbody.rows[ultimaLinha].appendChild(tdAcoes);
     }
 
-    function abrirModalAtualizarCliente(idCliente) {
-        // Adicione sua lógica para preencher o modal com os dados do cliente para atualização
-        // e abrir o modal aqui
-        console.log(`Abrir modal para atualizar dados do cliente com ID ${idCliente}`);
+    atualizarClienteButton.addEventListener('click', () => {
+        const idCliente = idClienteSelecionado;
+        const nomeAtualizado = document.getElementById('nomeAtualizado').value.trim();
+        const cpfAtualizado = document.getElementById('cpfAtualizado').value.trim();
+        const dataNascimentoAtualizada = document.getElementById('dataNascimentoAtualizada').value.trim();
+        const telefoneAtualizado = document.getElementById('telefoneAtualizado').value.trim();
+        const celularAtualizado = document.getElementById('celularAtualizado').value.trim();
+    
+        if (!nomeAtualizado || !cpfAtualizado || !dataNascimentoAtualizada || !celularAtualizado) {
+            displayErrorMessage('atualizarClienteError', 'Por favor, preencha todos os campos corretamente.');
+            return;
+        }
+    
+        if (!/^[a-zA-Z\s]+$/.test(nomeAtualizado)) {
+            displayErrorMessage('atualizarClienteError', 'Nome completo deve conter apenas letras.');
+            return;
+        }
+
+        const today = new Date();
+        const inputDate = new Date(dataNascimentoAtualizada);
+        if (isNaN(inputDate.getTime()) || inputDate >= today) {
+            displayErrorMessage('atualizarClienteError', 'Data de nascimento inválida.');
+            return;
+        }
+    
+        const updateQuery = `
+            UPDATE Clientes
+            SET nome = ?, cpf = ?, dataNascimento = ?, telefone = ?, celular = ?
+            WHERE id = ?;
+        `;
+    
+        const stmt = db.prepare(updateQuery);
+    
+        try {
+            stmt.bind([nomeAtualizado, cpfAtualizado, dataNascimentoAtualizada, telefoneAtualizado, celularAtualizado, idCliente]);
+            stmt.step();
+    
+            const rowsModified = db.getRowsModified();
+    
+            if (rowsModified > 0) {
+                console.log(`Cliente com ID ${idCliente} atualizado com sucesso.`);
+                carregarClientesNaTabelaHTML();
+                saveDatabase();
+            } else {
+                console.log(`Cliente com ID ${idCliente} não encontrado.`);
+            }
+        } catch (error) {
+            console.error(`Erro ao atualizar cliente com ID ${idCliente}:`, error);
+        }
+    
+        fecharModalEditar();
+    });
+    const cpfAtualizadoInput = document.getElementById('cpfAtualizado');
+    const telefoneAtualizadoInput = document.getElementById('telefoneAtualizado');
+    const celularAtualizadoInput = document.getElementById('celularAtualizado');
+    
+    if (cpfAtualizadoInput) {
+        cpfAtualizadoInput.addEventListener('input', () => {
+            let value = cpfAtualizadoInput.value.replace(/\D/g, '');
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+            cpfAtualizadoInput.value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        });
+    }
+    
+    if (telefoneAtualizadoInput) {
+        telefoneAtualizadoInput.addEventListener('input', () => {
+            let value = telefoneAtualizadoInput.value.replace(/\D/g, '');
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+            telefoneAtualizadoInput.value = value.replace(/(\d{2})(\d{5})(\d{4})/, '$1 $2-$3');
+        });
+    }
+    
+    if (celularAtualizadoInput) {
+        celularAtualizadoInput.addEventListener('input', () => {
+            let value = celularAtualizadoInput.value.replace(/\D/g, '');
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+            celularAtualizadoInput.value = value.replace(/(\d{2})(\d{5})(\d{4})/, '$1 $2-$3');
+        });
+    }
+    function obterDadosCliente(idCliente) {
+        const selectQuery = "SELECT * FROM Clientes WHERE id = ?;";
+        const stmt = db.prepare(selectQuery);
+    
+        try {
+            stmt.bind([idCliente]);
+            stmt.step();
+    
+            const cliente = stmt.getAsObject();
+    
+            return cliente;
+        } catch (error) {
+            console.error(`Erro ao obter dados do cliente com ID ${idCliente}:`, error);
+            return null; 
+        }
+    }
+
+    function obterIdCliente(nomeCompleto, cpf, dataNascimento) {
+        const selectQuery = "SELECT id FROM Clientes WHERE nome = ? AND cpf = ? AND dataNascimento = ?;";
+        const stmt = db.prepare(selectQuery);
+    
+        try {
+            stmt.bind([nomeCompleto, cpf, dataNascimento]);
+            stmt.step();
+    
+            const cliente = stmt.getAsObject();
+            return cliente.id;
+        } catch (error) {
+            console.error(`Erro ao obter ID do cliente:`, error);
+            return null;
+        }
     }
 
     if (salvarClienteButton) {
@@ -197,9 +320,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             adicionarClienteAoBanco(nomeCompleto, cpf, dataNascimento, telefone, celular);
             adicionarClienteATabelaHTML(nomeCompleto, cpf, dataNascimento, telefone, celular);
+
+            const idCliente = obterIdCliente(nomeCompleto, cpf, dataNascimento);
+            adicionarIconeAtualizarCliente(idCliente);
+            adicionarIconeExcluirCliente(idCliente);
+            
             limparCamposModal();
             fecharModal();
             hideErrorMessage('clienteError');
+            hideErrorMessage('atualizarClienteError');
         });
     }
     const cpfInput = document.getElementById('cpf');
@@ -235,6 +364,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             celularInput.value = value.replace(/(\d{2})(\d{5})(\d{4})/, '$1 $2-$3');
         });
     }
+    
     const tableBody = document.getElementById('clientesTableBody');
 
     const SQL = await initSqlJs({
@@ -262,10 +392,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const serializedDb = JSON.stringify([...buffer]);
         localStorage.setItem('myDatabase', serializedDb);
     }
+
     function fecharModal() {
         modalCliente.style.display = 'none';
     }
-    
+
+    function fecharModalEditar() {
+        modalAtualizarCliente.style.display = 'none';
+    }
+
     if (tableBody) {
         function adicionarClienteAoBanco(nomeCompleto, cpf, dataNascimento, telefone, celular) {
             const insertQuery = `INSERT INTO Clientes (nome, cpf, dataNascimento, telefone, celular) VALUES (?, ?, ?, ?, ?);`;
@@ -348,6 +483,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     hideErrorMessage('userExistsError');
     hideErrorMessage('userInvalidError');
     hideErrorMessage('clienteError');
+    hideErrorMessage('atualizarClienteError');
 
     if (loginButton) {
         loginButton.addEventListener('click', () => {
@@ -461,7 +597,6 @@ function displayErrorMessage(id, message) {
 function hideErrorMessage(id) {
     const errorElement = document.getElementById(id);
 
-    // Adicione esta verificação
     if (errorElement !== null) {
         errorElement.textContent = "";
         errorElement.style.display = 'none';
@@ -484,7 +619,6 @@ function initializeDatabase(db) {
         );
     `;
 
-    // Adicione esta parte para criar a tabela de usuários
     const createTableUsuarios = `
         CREATE TABLE IF NOT EXISTS Usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -526,7 +660,6 @@ function authenticateUser(db, usuario, senha) {
 }
 
 function createUser(db, usuario, senha) {
-    // Lógica de cadastro de novo usuário
     const insertQuery = `INSERT INTO Usuarios (usuario, senha) VALUES (?, ?);`;
     const stmt = db.prepare(insertQuery);
 
@@ -536,18 +669,17 @@ function createUser(db, usuario, senha) {
         const rowsModified = db.getRowsModified();
 
         if (rowsModified > 0) {
-            return true; // Cadastro bem-sucedido
+            return true; 
         } else {
-            return false; // Nenhuma linha modificada, cadastro falhou
+            return false; 
         }
     } catch (error) {
-        // Tratar erro de violação de restrição única
         if (error.message.includes('UNIQUE constraint failed: Usuarios.usuario')) {
             displayErrorMessage('userExistsError', 'Nome de usuário já existe.');
         } else {
             console.error(error);
         }
 
-        return false; // Cadastro falhou devido ao erro
+        return false; 
     }
 }
