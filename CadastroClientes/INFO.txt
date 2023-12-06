@@ -1,7 +1,0 @@
-Olá, tudo bem? Me chamo Nícolas Machado Cardoso
-
-Observações: é necessário a extensão "Live Server" para o funcionamento da aplicação. Ao abrir
-o diretório do projeto, é necessário executar npm install sql.js.
-
-Foi realmente um desafio fazer esse projeto pois eu possuo um conhecimento básico de JavaScript e não conhecia a biblioteca SQL.js, então me desculpem quaisquer erros ou falta de funcionalidades.
-Além disso, afirmo que esse projeto não demonstra meu potencial pois estava fora de casa os dois primeiros dias e quando cheguei em casa estava com uma dor de cabeça extremamente forte, optei por ficar longe do computador, então novamente, me desculpem não poder entregar 100% de mim mas me dediquei muito e fiquei até satisfeito com o resultado visto que aprendi diversas coisas novas.
