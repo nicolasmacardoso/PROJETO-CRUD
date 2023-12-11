@@ -213,7 +213,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 displayErrorMessage('atualizarClienteError', 'Por favor, preencha todos os campos corretamente.');
                 return;
             }
-        
+
+            if (cpfAtualizado.length < 11) {
+                displayErrorMessage('clienteError', 'CPF inválido.');
+                return;
+            }
+
+            if (telefoneAtualizado.length < 11 && telefone.length > 0) {
+                displayErrorMessage('clienteError', 'Telefone inválido.');
+                return;
+            }
+
+            if (celularAtualizado.length < 11) {
+                displayErrorMessage('clienteError', 'Celular inválido.');
+                return;
+            }
+
             if (!/^[a-zA-Z\s]+$/.test(nomeAtualizado)) {
                 displayErrorMessage('atualizarClienteError', 'Nome completo deve conter apenas letras.');
                 return;
@@ -330,6 +345,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!nomeCompleto || !cpf || !dataNascimento || !celular) {
                 displayErrorMessage('clienteError', 'Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            if (cpf.length < 11) {
+                displayErrorMessage('clienteError', 'CPF inválido.');
+                return;
+            }
+
+            if (telefone.length < 11 && telefone.length > 0) {
+                displayErrorMessage('clienteError', 'Telefone inválido.');
+                return;
+            }
+
+            if (celular.length < 11) {
+                displayErrorMessage('clienteError', 'Celular inválido.');
                 return;
             }
 
