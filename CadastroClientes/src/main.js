@@ -8,8 +8,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cadastrarButton = document.getElementById('cadastrarButton');
 
     const modalEndereco = document.getElementById('modalEndereco');
+    const modalAtualizarEndereco = document.getElementById('modalAtualizarEndereco');
     const fecharModalEndereco = document.getElementById('fecharModalEndereco');
-    const selectUsuario = document.getElementById('usuario');
+    const fecharModalAtualizarEndereco = document.getElementById('fecharModalAtualizarEndereco');
+
+    const atualizarEnderecoButton = document.getElementById('atualizarEnderecoButton');
 
     const modalCliente = document.getElementById('modalCliente');
     const modalAtualizarCliente = document.getElementById('modalAtualizarCliente');
@@ -38,6 +41,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         modalAtualizarCliente.style.display = 'block';
     }
 
+    function abrirModalAtualizarEndereco() {
+        modalAtualizarEndereco.style.display = 'block';
+    }
+
     if (cadastrarButton) {
         cadastrarButton.addEventListener('click', () => {
         if (cadastrarButton.textContent === 'Cadastrar novo cliente') {
@@ -63,6 +70,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    if (fecharModalAtualizarEndereco) {
+        fecharModalAtualizarEndereco.addEventListener('click', () => {
+            fecharModalEditarEndereco();
+        });
+    }
+
     if (fecharModalEndereco) {
         fecharModalEndereco.addEventListener('click', () => {
             fecharModalEnderecos();
@@ -70,9 +83,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     window.addEventListener('click', (event) => {
-        if (event.target === modalCliente || event.target === modalEndereco || event.target === modalAtualizarCliente) {
+        if (event.target === modalCliente || event.target === modalEndereco || event.target === modalAtualizarCliente || event.target === modalAtualizarEndereco) {
             fecharModal();
             fecharModalEditar();
+            fecharModalEditarEndereco();
             fecharModalEnderecos();
             limparCamposModal();
         }
@@ -97,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         tableTitle.textContent = 'CLIENTES';
         mudarTabela.textContent = 'Endereços dos clientes';
-        cadastrarButton.textContent = 'Cadastrar novo cliente ';
+        cadastrarButton.textContent = 'Cadastrar novo cliente';
     
         clientesTable.style.display = 'table';
         enderecosTable.style.display = 'none';
@@ -126,6 +140,218 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    function confirmarExclusaoEndereco(idEndereco) {
+        Swal.fire({
+            title: 'Confirmação',
+            text: 'Tem certeza que deseja excluir este endereço?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#8fc3ec',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar',
+            backdrop: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                excluirEndereco(idEndereco);
+            }
+        });
+    }
+
+    function adicionarIconeExcluirEndereco(idEndereco) {
+        const tabela = document.getElementById('enderecosTable');
+        const tbody = tabela.querySelector('tbody');
+    
+        const botaoExcluir = document.createElement('button');
+        botaoExcluir.className = 'btn btn-danger btn-sm';
+        botaoExcluir.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/></svg>';
+        botaoExcluir.addEventListener('click', () => {
+            confirmarExclusaoEndereco(idEndereco);
+        });
+    
+        const tdAcoes = document.createElement('td');
+        tdAcoes.appendChild(botaoExcluir);
+    
+        const ultimaLinha = tbody.rows.length - 1;
+        tbody.rows[ultimaLinha].appendChild(tdAcoes);
+    }    
+
+    function excluirEndereco(idEndereco) {
+        const deleteQuery = "DELETE FROM Enderecos WHERE id = ?;";
+        const stmt = db.prepare(deleteQuery);
+    
+        try {
+            stmt.bind([idEndereco]);
+            stmt.step();
+    
+            const rowsModified = db.getRowsModified();
+    
+            if (rowsModified > 0) {
+                console.log(`Endereco com ID ${idEndereco} excluído com sucesso.`);
+
+                carregarEnderecosNaTabelaHTML();
+                saveDatabase();
+
+            } else {
+                console.log(`Endereco com ID ${idEndereco} não encontrado.`);
+            }
+        } catch (error) {
+            console.error(`Erro ao excluir endereço com ID ${idEndereco}:`, error);
+        }
+    }
+
+    let idEnderecoSelecionado;
+
+    function adicionarIconeAtualizarEndereco(idEndereco) {
+        const tabela = document.getElementById('enderecosTable');
+        const tbody = tabela.querySelector('tbody');
+
+        const botaoAtualizar = document.createElement('button');
+        botaoAtualizar.className = 'btn btn-primary btn-sm ms-2';
+        botaoAtualizar.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/></svg>';
+
+        botaoAtualizar.addEventListener('click', () => {
+            idEnderecoSelecionado = idEndereco;
+
+            const enderecoSelecionado = obterDadosEndereco(idEndereco);
+            
+            document.getElementById('cepAtualizado').value = enderecoSelecionado.cep;
+            document.getElementById('ruaAtualizada').value = enderecoSelecionado.rua;
+            document.getElementById('bairroAtualizado').value = enderecoSelecionado.bairro;
+            document.getElementById('paisAtualizado').value = enderecoSelecionado.pais;
+            document.getElementById('cidadeAtualizada').value = enderecoSelecionado.cidade;
+            document.getElementById('estadoAtualizado').value = enderecoSelecionado.estado;
+
+            abrirModalAtualizarEndereco();
+    });
+
+        const tdAcoes = document.createElement('td');
+        tdAcoes.appendChild(botaoAtualizar);
+
+        const ultimaLinha = tbody.rows.length - 1;
+        tbody.rows[ultimaLinha].appendChild(tdAcoes);
+    }
+
+    if (atualizarEnderecoButton) {
+        atualizarEnderecoButton.addEventListener('click', () => {
+            const idEndereco = idEnderecoSelecionado;
+            const cepAtualizado = document.getElementById('cepAtualizado').value.trim();
+            const cpfAtualizado = document.getElementById('cpfAtualizado').value.trim();
+            const dataNascimentoAtualizada = document.getElementById('dataNascimentoAtualizada').value.trim();
+            const telefoneAtualizado = document.getElementById('telefoneAtualizado').value.trim();
+            const celularAtualizado = document.getElementById('celularAtualizado').value.trim();
+        
+            if (!nomeAtualizado || !cpfAtualizado || !dataNascimentoAtualizada || !celularAtualizado) {
+                displayErrorMessage('atualizarClienteError', 'Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            if (cpfAtualizado.length < 11) {
+                displayErrorMessage('clienteError', 'CPF inválido.');
+                return;
+            }
+
+            if (telefoneAtualizado.length < 11 && telefone.length > 0) {
+                displayErrorMessage('clienteError', 'Telefone inválido.');
+                return;
+            }
+
+            if (celularAtualizado.length < 11) {
+                displayErrorMessage('clienteError', 'Celular inválido.');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(nomeAtualizado)) {
+                displayErrorMessage('atualizarClienteError', 'Nome completo deve conter apenas letras.');
+                return;
+            }
+
+            const today = new Date();
+            const inputDate = new Date(dataNascimentoAtualizada);
+            if (isNaN(inputDate.getTime()) || inputDate >= today) {
+                displayErrorMessage('atualizarClienteError', 'Data de nascimento inválida.');
+                return;
+            }
+        
+            const updateQuery = `
+                UPDATE Clientes
+                SET nome = ?, cpf = ?, dataNascimento = ?, telefone = ?, celular = ?
+                WHERE id = ?;
+            `;
+        
+            const stmt = db.prepare(updateQuery);
+        
+            try {
+                stmt.bind([nomeAtualizado, cpfAtualizado, dataNascimentoAtualizada, telefoneAtualizado, celularAtualizado, idCliente]);
+                stmt.step();
+        
+                const rowsModified = db.getRowsModified();
+        
+                if (rowsModified > 0) {
+                    console.log(`Cliente com ID ${idCliente} atualizado com sucesso.`);
+                    carregarEnderecosNaTabelaHTML();
+                    saveDatabase();
+                } else {
+                    console.log(`Cliente com ID ${idCliente} não encontrado.`);
+                }
+            } catch (error) {
+                console.error(`Erro ao atualizar cliente com ID ${idCliente}:`, error);
+            }
+        
+            fecharModalEditar();
+        });
+    }
+    const cepAtualizadoInput = document.getElementById('cpfAtualizado');
+
+    if (cepAtualizadoInput) {
+        cepAtualizadoInput.addEventListener('input', () => {
+            let value = cepAtualizadoInput.value.replace(/\D/g, '');
+            if (value.length > 8) {
+                value = value.slice(0, 8);
+            }
+            cepAtualizadoInput.value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+        });
+    }
+
+    function obterDadosEndereco(idEndereco) {
+        const selectQuery = "SELECT * FROM Enderecos WHERE id = ?;";
+        const stmt = db.prepare(selectQuery);
+    
+        try {
+            stmt.bind([idEndereco]);
+            stmt.step();
+    
+            const endereco = stmt.getAsObject();
+    
+            return endereco;
+        } catch (error) {
+            console.error(`Erro ao obter dados do endereco com ID ${idEndereco}:`, error);
+            return null; 
+        }
+    }
+
+    function obterIdEndereco(rua, cep, bairro) {
+        const selectQuery = "SELECT id FROM Enderecos WHERE nome = ? AND cep = ? AND bairro = ?;";
+        const stmt = db.prepare(selectQuery);
+    
+        try {
+            stmt.bind([rua, cep, bairro]);
+            stmt.step();
+    
+            const endereco = stmt.getAsObject();
+            return endereco.id;
+        } catch (error) {
+            console.error(`Erro ao obter ID do endereco:`, error);
+            return null;
+        }
+    }
+
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 
     function adicionarIconeExcluirCliente(idCliente) {
         const tabela = document.getElementById('clientesTable');
@@ -397,34 +623,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             const cidade = document.getElementById('cidade').value;
             const estado = document.getElementById('estado').value;
             const pais = document.getElementById('pais').value;
-            const usuario = document.getElementById('usuario').value;
+            const identificador_cliente = document.getElementById('usuario').value;
 
-            if (!cep || !rua || !bairro || !cidade || !estado || !pais || !usuario) {
+            if (!cep || !rua || !bairro || !cidade || !estado || !pais || !identificador_cliente) {
                 displayErrorMessage('enderecoError', 'Por favor, preencha todos os campos corretamente.');
                 return;
             }
 
             if (!/^[a-zA-Z\s]+$/.test(rua)) {
-                displayErrorMessage('enderecoError', 'Nome completo deve conter apenas letras.');
+                displayErrorMessage('enderecoError', 'Rua deve conter apenas letras.');
                 return;
             }
 
-            const today = new Date();
-            const inputDate = new Date(dataNascimento);
-            if (isNaN(inputDate.getTime()) || inputDate >= today) {
-                displayErrorMessage('enderecoError', 'Data de nascimento inválida.');
-                return;
-            }
-
-            adicionarEnderecoAoBanco(nomeCompleto, cpf, dataNascimento, telefone, celular);
-            adicionarEnderecoATabelaHTML(nomeCompleto, cpf, dataNascimento, telefone, celular);
+            adicionarEnderecoAoBanco(cep, rua, bairro, cidade, estado, pais, identificador_cliente);
+            adicionarEnderecoATabelaHTML(cep, rua, bairro, cidade, estado, pais, identificador_cliente);
 
             const idEndereco = obterIdEndereco(nomeCompleto, cpf, dataNascimento);
             adicionarIconeAtualizarEndereco(idEndereco);
             adicionarIconeExcluirEndereco(idEndereco);
             
             limparCamposModal();
-            fecharModal();
+            fecharModalEnderecos();
             hideErrorMessage('enderecoError');
             hideErrorMessage('atualizarEnderecoError');
         });
@@ -500,6 +719,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         modalAtualizarCliente.style.display = 'none';
     }
 
+    function fecharModalEditarEndereco() {
+        modalAtualizarEndereco.style.display = 'none';
+    }
+
     function fecharModalEnderecos() {
         modalEndereco.style.display = 'none';
     }
@@ -514,6 +737,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             saveDatabase();
         }
+
+        function adicionarEnderecoAoBanco(cep, rua, bairro, cidade, estado, pais, identificador_cliente) {
+            const insertQuery = `
+                INSERT INTO Enderecos (cep, rua, bairro, cidade, estado, pais, identificador_cliente)
+                VALUES (?, ?, ?, ?, ?, ?, ?);
+            `;
+            
+            const stmt = db.prepare(insertQuery);
+            
+            try {
+                stmt.bind([cep, rua, bairro, cidade, estado, pais, identificador_cliente]);
+                stmt.step();
+        
+                const rowsModified = db.getRowsModified();
+        
+                if (rowsModified > 0) {
+                    console.log('Endereço adicionado com sucesso.');
+                    saveDatabase();
+                } else {
+                    console.log('Erro ao adicionar endereço.');
+                }
+            } catch (error) {
+                console.error('Erro ao adicionar endereço:', error);
+            }
+        }
+        
         
         function adicionarClienteATabelaHTML(nomeCompleto, cpf, dataNascimento, telefone, celular) {
             const tableBody = document.getElementById('clientesTableBody');
@@ -523,6 +772,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             newRow.insertCell(2).textContent = dataNascimento;
             newRow.insertCell(3).textContent = telefone;
             newRow.insertCell(4).textContent = celular;
+        }
+
+        function adicionarEnderecoATabelaHTML(cep, rua, bairro, cidade, estado, pais) {
+            const tableBody = document.getElementById('enderecosTableBody');
+            const newRow = tableBody.insertRow();
+            newRow.insertCell(0).textContent = cep;
+            newRow.insertCell(1).textContent = rua;
+            newRow.insertCell(2).textContent = bairro;
+            newRow.insertCell(3).textContent = cidade;
+            newRow.insertCell(4).textContent = estado;
+            newRow.insertCell(5).textContent = pais;
         }
         
         function carregarClientesNaTabelaHTML() {
@@ -543,10 +803,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         
             console.log('Clientes carregados na tabela HTML.');
         }
+        
+        function carregarEnderecosNaTabelaHTML() {
+            console.log('Iniciando carregamento de enderecos na tabela HTML.');
+            const tableBody = document.getElementById('enderecosTableBody');
+            tableBody.innerHTML = '';
+        
+            const selectQuery = "SELECT * FROM Enderecos;";
+            const stmt = db.prepare(selectQuery);
+        
+            while (stmt.step()) {
+                const endereco = stmt.getAsObject();
+                console.log('Endereço carregado na tabela HTML:', endereco.rua);
+                adicionarEnderecoATabelaHTML(endereco.cep, endereco.rua, endereco.bairro, endereco.estado, endereco.pais, endereco.cidade, endereco.identificador_cliente, endereco.principal);
+                adicionarIconeAtualizarEndereco(endereco.id); 
+                adicionarIconeExcluirEndereco(endereco.id); 
+            }
+        
+            console.log('Endereços carregados na tabela HTML.');
+        }
     }
     
     if (tableBody) {
         carregarClientesNaTabelaHTML();
+        carregarEnderecosNaTabelaHTML();
     }
 
     if (mudarTabela) {
@@ -717,7 +997,6 @@ function initializeDatabase(db) {
             estado TEXT,
             pais TEXT,
             identificador_cliente INTEGER,
-            principal BOOLEAN,
             FOREIGN KEY (identificador_cliente) REFERENCES Clientes(id)
         );
     `;

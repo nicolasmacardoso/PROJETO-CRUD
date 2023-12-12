@@ -102,7 +102,7 @@
                 <input type="text" id="rua" required>
         
                 <label for="bairro">Bairro:</label>
-                <input type="date" id="bairro" required>
+                <input type="text" id="bairro" required>
         
                 <label for="cidade">Cidade:</label>
                 <input type="text" id="cidade">
@@ -114,9 +114,41 @@
                 <input type="text" id="pais">
 
                 <label for="usuario">Usuário:</label>
-                <select id="usuario" required></select>
+                <input type="text" id="usuario">
         
                 <button type="button" id="salvarEnderecoButton">Cadastrar endereço</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalAtualizarEndereco" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fecharModalAtualizar">&times;</span>
+            <h2 class="modal-title" id="atualizar-endereco">Atualizar endereço</h2>
+            <form id="formAtualizarEndereco">
+                <div id="atualizarEnderecoError" class="error-message"></div>
+                <label for="cepAtualizado">CEP:</label>
+                <input type="text" id="cepAtualizado" required>
+    
+                <label for="ruaAtualizada">Rua:</label>
+                <input type="text" id="ruaAtualizada" required>
+    
+                <label for="bairroAtualizado">Bairro:</label>
+                <input type="text" id="bairroAtualizado" required>
+    
+                <label for="cidadeAtualizada">Cidade:</label>
+                <input type="text" id="cidadeAtualizada">
+    
+                <label for="estadoAtualizado">Estado:</label>
+                <input type="text" id="estadoAtualizado">
+
+                <label for="paisAtualizado">País:</label>
+                <input type="text" id="paisAtualizado">
+
+                <label for="usuarioAtualizado">usuarioAtualizado:</label>
+                <input type="text" id="usuarioAtualizado">
+
+                <button type="button" id="atualizarEnderecoButton">Atualizar endereço</button>
             </form>
         </div>
     </div>
