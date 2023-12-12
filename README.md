@@ -1,2 +1,3 @@
 # PROJETO-CRUD
- Projeto de CRUD teste utilizando SQL.JS, HTML e CSS feito em 2 dias aprendendo o conteúdo na prática.
+ Projeto de CRUD teste utilizando SQL.JS, HTML e CSS aprendendo o conteúdo na prática.
+- Instruções para rodá-lo: executar npm install sql.js na pasta CadastroClientes; instalar a extensão Live Server e executá-la no index.html; criar um cadastro e pronto! 😃
