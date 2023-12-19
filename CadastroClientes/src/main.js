@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('paisAtualizado').value = enderecoSelecionado.pais;
             document.getElementById('cidadeAtualizada').value = enderecoSelecionado.cidade;
             document.getElementById('estadoAtualizado').value = enderecoSelecionado.estado;
-            document.getElementById('usuarioAtualizado').value = enderecoSelecionado.usuario;
+            document.getElementById('usuarioAtualizado').value = enderecoSelecionado.identificador_cliente;
 
 
             abrirModalAtualizarEndereco();
@@ -838,7 +838,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             while (stmt.step()) {
                 const endereco = stmt.getAsObject();
                 console.log('Endereço carregado na tabela HTML:', endereco.rua);
-                adicionarEnderecoATabelaHTML(endereco.cep, endereco.rua, endereco.bairro, endereco.estado, endereco.pais, endereco.cidade, endereco.identificador_cliente, endereco.principal);
+                adicionarEnderecoATabelaHTML(endereco.cep, endereco.rua, endereco.bairro, endereco.estado, endereco.pais, endereco.cidade, endereco.identificador_cliente);
                 adicionarIconeAtualizarEndereco(endereco.id); 
                 adicionarIconeExcluirEndereco(endereco.id); 
             }
@@ -874,9 +874,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 cadastroForm.style.display = 'none';
             }
         });
-    }
-
-    
+    } 
 
     const loginButton = document.getElementById('loginButton');
     const cadastroButton = document.getElementById('cadastroButton');

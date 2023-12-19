@@ -255,6 +255,10 @@ input:enabled {
     margin-top: 0;
 }
 
+#atualizar-endereco {
+    font-size: 1.9em!important;
+}
+
 #enderecoError {
     margin-top: 0;
 }
