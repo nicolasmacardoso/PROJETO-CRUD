@@ -222,6 +222,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('paisAtualizado').value = enderecoSelecionado.pais;
             document.getElementById('cidadeAtualizada').value = enderecoSelecionado.cidade;
             document.getElementById('estadoAtualizado').value = enderecoSelecionado.estado;
+            document.getElementById('usuarioAtualizado').value = enderecoSelecionado.usuario;
+
 
             abrirModalAtualizarEndereco();
     });
@@ -237,72 +239,84 @@ document.addEventListener('DOMContentLoaded', async () => {
         atualizarEnderecoButton.addEventListener('click', () => {
             const idEndereco = idEnderecoSelecionado;
             const cepAtualizado = document.getElementById('cepAtualizado').value.trim();
-            const cpfAtualizado = document.getElementById('cpfAtualizado').value.trim();
-            const dataNascimentoAtualizada = document.getElementById('dataNascimentoAtualizada').value.trim();
-            const telefoneAtualizado = document.getElementById('telefoneAtualizado').value.trim();
-            const celularAtualizado = document.getElementById('celularAtualizado').value.trim();
-        
-            if (!nomeAtualizado || !cpfAtualizado || !dataNascimentoAtualizada || !celularAtualizado) {
-                displayErrorMessage('atualizarClienteError', 'Por favor, preencha todos os campos corretamente.');
+            const ruaAtualizada = document.getElementById('ruaAtualizada').value.trim();
+            const bairroAtualizado = document.getElementById('bairroAtualizado').value.trim();
+            const paisAtualizado = document.getElementById('paisAtualizado').value.trim();
+            const cidadeAtualizada = document.getElementById('cidadeAtualizada').value.trim();
+            const estadoAtualizado = document.getElementById('estadoAtualizado').value.trim();
+            const usuarioAtualizado = document.getElementById('usuarioAtualizado').value.trim();
+
+            if (!cepAtualizado || !ruaAtualizada || !bairroAtualizado || !paisAtualizado || !cidadeAtualizada || !estadoAtualizado || !usuarioAtualizado) {
+                displayErrorMessage('atualizarEnderecoError', 'Por favor, preencha todos os campos corretamente.');
                 return;
             }
 
-            if (cpfAtualizado.length < 11) {
-                displayErrorMessage('clienteError', 'CPF inválido.');
+            if (cepAtualizado.length < 8) {
+                displayErrorMessage('enderecoError', 'CEP inválido.');
                 return;
             }
 
-            if (telefoneAtualizado.length < 11 && telefone.length > 0) {
-                displayErrorMessage('clienteError', 'Telefone inválido.');
+            if (!/^[a-zA-Z\s]+$/.test(ruaAtualizada)) {
+                displayErrorMessage('atualizarEnderecoError', 'Rua deve conter apenas letras.');
                 return;
             }
 
-            if (celularAtualizado.length < 11) {
-                displayErrorMessage('clienteError', 'Celular inválido.');
-                return;
-            }
-
-            if (!/^[a-zA-Z\s]+$/.test(nomeAtualizado)) {
-                displayErrorMessage('atualizarClienteError', 'Nome completo deve conter apenas letras.');
-                return;
-            }
-
-            const today = new Date();
-            const inputDate = new Date(dataNascimentoAtualizada);
-            if (isNaN(inputDate.getTime()) || inputDate >= today) {
-                displayErrorMessage('atualizarClienteError', 'Data de nascimento inválida.');
+            if (!/^[a-zA-Z\s]+$/.test(bairroAtualizado)) {
+                displayErrorMessage('atualizarEnderecoError', 'Bairro deve conter apenas letras.');
                 return;
             }
         
+            if (!/^[a-zA-Z\s]+$/.test(paisAtualizado)) {
+                displayErrorMessage('atualizarEnderecoError', 'País deve conter apenas letras.');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(cidadeAtualizada)) {
+                displayErrorMessage('atualizarEnderecoError', 'Cidade deve conter apenas letras.');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(estadoAtualizado)) {
+                displayErrorMessage('atualizarEnderecoError', 'Estado deve conter apenas letras.');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(usuarioAtualizado)) {
+                displayErrorMessage('atualizarEnderecoError', 'Usuário deve conter apenas letras.');
+                return;
+            }
+
             const updateQuery = `
-                UPDATE Clientes
-                SET nome = ?, cpf = ?, dataNascimento = ?, telefone = ?, celular = ?
+                UPDATE Enderecos
+                SET cep = ?, rua = ?, bairro = ?, pais = ?, cidade = ?, estado = ?, identificador_cliente = ?
                 WHERE id = ?;
             `;
         
             const stmt = db.prepare(updateQuery);
         
             try {
-                stmt.bind([nomeAtualizado, cpfAtualizado, dataNascimentoAtualizada, telefoneAtualizado, celularAtualizado, idCliente]);
+                stmt.bind([cepAtualizado, ruaAtualizada, bairroAtualizado, paisAtualizado, cidadeAtualizada, estadoAtualizado,usuarioAtualizado]);
                 stmt.step();
         
                 const rowsModified = db.getRowsModified();
         
                 if (rowsModified > 0) {
-                    console.log(`Cliente com ID ${idCliente} atualizado com sucesso.`);
+                    console.log(`Endereço com ID ${idEndereco} atualizado com sucesso.`);
                     carregarEnderecosNaTabelaHTML();
                     saveDatabase();
                 } else {
-                    console.log(`Cliente com ID ${idCliente} não encontrado.`);
+                    console.log(`Endereço com ID ${idEndereco} não encontrado.`);
                 }
             } catch (error) {
-                console.error(`Erro ao atualizar cliente com ID ${idCliente}:`, error);
+                console.error(`Erro ao atualizar endereço com ID ${idEndereco}:`, error);
             }
         
-            fecharModalEditar();
+            fecharModalEditarEndereco();
         });
     }
-    const cepAtualizadoInput = document.getElementById('cpfAtualizado');
+    const cepAtualizadoInput = document.getElementById('cepAtualizado');
+
+    const cepInput = document.getElementById('cep');
 
     if (cepAtualizadoInput) {
         cepAtualizadoInput.addEventListener('input', () => {
@@ -311,6 +325,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 value = value.slice(0, 8);
             }
             cepAtualizadoInput.value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+        });
+    }
+
+    if (cepInput) {
+        cepInput.addEventListener('input', () => {
+            let value = cepInput.value.replace(/\D/g, '');
+            if (value.length > 8) {
+                value = value.slice(0, 8);
+            }
+            cepInput.value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
         });
     }
 
@@ -332,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function obterIdEndereco(rua, cep, bairro) {
-        const selectQuery = "SELECT id FROM Enderecos WHERE nome = ? AND cep = ? AND bairro = ?;";
+        const selectQuery = "SELECT id FROM Enderecos WHERE cep = ? AND bairro = ?;";
         const stmt = db.prepare(selectQuery);
     
         try {
@@ -347,6 +371,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    if (salvarEnderecoButton) {
+        salvarEnderecoButton.addEventListener('click', () => {
+            const cep = document.getElementById('cep').value;
+            const rua = document.getElementById('rua').value;
+            const bairro = document.getElementById('bairro').value;
+            const cidade = document.getElementById('cidade').value;
+            const estado = document.getElementById('estado').value;
+            const pais = document.getElementById('pais').value;
+            const identificador_cliente = document.getElementById('usuario').value;
+
+            if (!cep || !rua || !bairro || !cidade || !estado || !pais || !identificador_cliente) {
+                displayErrorMessage('enderecoError', 'Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(rua)) {
+                displayErrorMessage('enderecoError', 'Rua deve conter apenas letras.');
+                return;
+            }
+
+            adicionarEnderecoAoBanco(cep, rua, bairro, cidade, estado, pais, identificador_cliente);
+            adicionarEnderecoATabelaHTML(cep, rua, bairro, cidade, estado, pais, identificador_cliente);
+
+            const idEndereco = obterIdEndereco(nomeCompleto, cpf, dataNascimento);
+            adicionarIconeAtualizarEndereco(idEndereco);
+            adicionarIconeExcluirEndereco(idEndereco);
+            
+            limparCamposModal();
+            fecharModalEnderecos();
+            hideErrorMessage('enderecoError');
+            hideErrorMessage('atualizarEnderecoError');
+        });
+    }
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
@@ -612,40 +669,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             fecharModal();
             hideErrorMessage('clienteError');
             hideErrorMessage('atualizarClienteError');
-        });
-    }
-
-    if (salvarEnderecoButton) {
-        salvarEnderecoButton.addEventListener('click', () => {
-            const cep = document.getElementById('cep').value;
-            const rua = document.getElementById('rua').value;
-            const bairro = document.getElementById('bairro').value;
-            const cidade = document.getElementById('cidade').value;
-            const estado = document.getElementById('estado').value;
-            const pais = document.getElementById('pais').value;
-            const identificador_cliente = document.getElementById('usuario').value;
-
-            if (!cep || !rua || !bairro || !cidade || !estado || !pais || !identificador_cliente) {
-                displayErrorMessage('enderecoError', 'Por favor, preencha todos os campos corretamente.');
-                return;
-            }
-
-            if (!/^[a-zA-Z\s]+$/.test(rua)) {
-                displayErrorMessage('enderecoError', 'Rua deve conter apenas letras.');
-                return;
-            }
-
-            adicionarEnderecoAoBanco(cep, rua, bairro, cidade, estado, pais, identificador_cliente);
-            adicionarEnderecoATabelaHTML(cep, rua, bairro, cidade, estado, pais, identificador_cliente);
-
-            const idEndereco = obterIdEndereco(nomeCompleto, cpf, dataNascimento);
-            adicionarIconeAtualizarEndereco(idEndereco);
-            adicionarIconeExcluirEndereco(idEndereco);
-            
-            limparCamposModal();
-            fecharModalEnderecos();
-            hideErrorMessage('enderecoError');
-            hideErrorMessage('atualizarEnderecoError');
         });
     }
 
