@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             fecharModal();
             fecharModalEditar();
             fecharModalEditarEndereco();
-            fecharModalEnderecos();
+            fecharModalEndereco();
             limparCamposModal();
         }
     });
@@ -838,7 +838,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             while (stmt.step()) {
                 const endereco = stmt.getAsObject();
                 console.log('Endereço carregado na tabela HTML:', endereco.rua);
-                adicionarEnderecoATabelaHTML(endereco.cep, endereco.rua, endereco.bairro, endereco.estado, endereco.pais, endereco.cidade, endereco.identificador_cliente);
+                adicionarEnderecoATabelaHTML(endereco.cep, endereco.rua, endereco.bairro, endereco.estado, endereco.pais, endereco.cidade);
                 adicionarIconeAtualizarEndereco(endereco.id); 
                 adicionarIconeExcluirEndereco(endereco.id); 
             }
